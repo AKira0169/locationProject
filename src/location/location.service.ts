@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TagService } from 'src/tag/tag.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { Location } from './entities/location.entity';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class LocationService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectRepository(Location)
     private locationRepository: Repository<Location>,
     private tagService: TagService,
@@ -52,6 +54,8 @@ export class LocationService {
     // Emit to socket
     this.socketGateway.server.emit('newLocation', fullLocation);
 
+    await this.cacheManager.del('locations_all');
+
     return fullLocation;
   }
 
@@ -72,6 +76,8 @@ export class LocationService {
   }
 
   async remove(id: number) {
-    return await this.locationRepository.delete(id);
+    const location = await this.locationRepository.delete(id);
+    await this.cacheManager.del('locations_all');
+    return location;
   }
 }
