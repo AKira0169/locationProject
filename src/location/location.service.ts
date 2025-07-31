@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -14,12 +14,12 @@ export class LocationService {
     @InjectRepository(Location)
     private locationRepository: Repository<Location>,
     private tagService: TagService,
+    @Inject(forwardRef(() => SocketGateway)) // 👈 FIX HERE
     private socketGateway: SocketGateway,
   ) {}
 
   async create(createLocationDto: CreateLocationDto) {
     const { tags: tagLabels, ...locationData } = createLocationDto;
-
     // Create the location instance
     const location = this.locationRepository.create(locationData);
 
