@@ -62,6 +62,7 @@ export class LocationService {
 
     return locations.map((location) => ({
       ...location,
+      tags: location.tags.map((tag) => tag.label),
       mapUrl: `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
     }));
   }
