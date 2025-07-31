@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -24,6 +24,10 @@ export class TagService {
     return await this.tagRepository.findOne({ where: { id } });
   }
   async findByIds(ids: number[]): Promise<Tag[]> {
-    return this.tagRepository.findBy({ id: In(ids) });
+    const tags = await this.tagRepository.findBy({ id: In(ids) });
+    if (ids.length !== tags.length) {
+      throw new BadRequestException('Invalde tag ids');
+    }
+    return tags;
   }
 }
