@@ -25,24 +25,42 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Prerequisites
+
+- Node.js >=20.0.0
+- npm >=10.0.0
+
 ## Project setup
 
 ```bash
 $ npm install
 ```
 
+## Database Setup
+
+This project uses PostgreSQL. Make sure you have a running instance of PostgreSQL.
+
+1.  Create a `.env` file in the root of the project.
+2.  Add the following environment variables to the `.env` file:
+
+    ```
+    POSTGRES_HOST=localhost
+    POSTGRES_PORT=5432
+    POSTGRES_USER=your_postgres_user
+    POSTGRES_PASSWORD=your_postgres_password
+    POSTGRES_DB=your_postgres_database
+    ```
+
+3.  Replace the placeholder values with your actual database credentials.
+
 ## Compile and run the project
 
 ```bash
-# development
-$ npm run start
-
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
+
+The application will be running on `http://localhost:3000`.
 
 ## Run tests
 
