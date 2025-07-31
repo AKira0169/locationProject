@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { TagService } from 'src/tag/tag.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { Location } from './entities/location.entity';
+import { map } from 'rxjs';
 
 @Injectable()
 export class LocationService {
@@ -43,16 +44,21 @@ export class LocationService {
   }
 
   async findAll() {
-    return await this.locationRepository.find({
+    const locations = await this.locationRepository.find({
       relations: ['tags'],
     });
+
+    return locations.map((location) => ({
+      ...location,
+      mapUrl: `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
+    }));
   }
 
   findOne(id: number) {
     return `This action returns a #${id} location`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} location`;
+  async remove(id: number) {
+    return await this.locationRepository.delete(id);
   }
 }
