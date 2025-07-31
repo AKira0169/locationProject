@@ -9,6 +9,6 @@ export class CreateLocationDto {
   longitude: number;
 
   @IsArray()
-  @IsNumber({}, { each: true })
-  tags: number[];
+  @IsString({ each: true })
+  tags: string[];
 }

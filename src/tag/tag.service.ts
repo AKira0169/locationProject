@@ -23,6 +23,13 @@ export class TagService {
   async findOne(id: number) {
     return await this.tagRepository.findOne({ where: { id } });
   }
+
+  async findByNames(labels: string[]): Promise<Tag[]> {
+    return await this.tagRepository.find({
+      where: { label: In(labels) },
+    });
+  }
+
   async findByIds(ids: number[]): Promise<Tag[]> {
     const tags = await this.tagRepository.findBy({ id: In(ids) });
     if (ids.length !== tags.length) {
