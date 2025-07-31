@@ -24,8 +24,6 @@ export class TagService {
     return await this.tagRepository.findOne({ where: { id } });
   }
   async findByIds(ids: number[]): Promise<Tag[]> {
-    return this.tagRepository.findBy({
-      id: In(ids),
-    });
+    return this.tagRepository.findBy({ id: In(ids) });
   }
 }

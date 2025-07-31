@@ -18,27 +18,34 @@ export class LocationService {
   async create(createLocationDto: CreateLocationDto) {
     const { tags: tagIds, ...locationData } = createLocationDto;
 
-    // Create a new Location instance
-    const location = new Location();
-    Object.assign(location, locationData);
+    // Create location instance using repository.create() for better performance
+    const location = this.locationRepository.create(locationData);
 
-    // Save the location first
-    const savedLocation = await this.locationRepository.save(location);
-
-    // Then handle tags if they exist
-    if (tagIds && tagIds.length > 0) {
+    // Fetch tags in parallel if they exist
+    if (tagIds?.length > 0) {
       const tags = await this.tagService.findByIds(tagIds);
-      savedLocation.tags = tags; // This will work now
-      await this.locationRepository.save(savedLocation);
+      location.tags = tags;
     }
 
-    this.socketGateway.server.emit('newLocation', savedLocation);
+    // Single save operation with cascade handling the relationship
+    const savedLocation = await this.locationRepository.save(location);
 
-    return savedLocation;
+    // Load the complete entity with relations for consistent response
+    const fullLocation = await this.locationRepository.findOne({
+      where: { id: savedLocation.id },
+      relations: ['tags'],
+    });
+
+    // Emit the complete entity to socket
+    this.socketGateway.server.emit('newLocation', fullLocation);
+
+    return fullLocation;
   }
 
-  findAll() {
-    return `This action returns all location`;
+  async findAll() {
+    return await this.locationRepository.find({
+      relations: ['tags'],
+    });
   }
 
   findOne(id: number) {

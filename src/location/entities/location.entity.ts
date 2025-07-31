@@ -18,7 +18,7 @@ export class Location {
   @Column('double precision')
   longitude: number;
 
-  @ManyToMany(() => Tag, (tag) => tag.locations)
-  @JoinTable() // only needed on one side (owning side)
+  @ManyToMany(() => Tag, (tag) => tag.locations, { cascade: true })
+  @JoinTable()
   tags: Tag[];
 }
